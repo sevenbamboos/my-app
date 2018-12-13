@@ -1,9 +1,11 @@
 package com.mycompany.model;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -11,6 +13,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Employee {
+
+  private static final Map<Long, Employee> cache = new HashMap<>();
 
   final long id;
   private final String name;
@@ -22,6 +26,8 @@ public class Employee {
     this.id = id;
     this.name = name;
     this.reportToID = reportToID;
+
+    cache.put(id, this);
   }
 
   public String getName() {
@@ -43,7 +49,11 @@ public class Employee {
   }
 
   public Optional<Employee> getReportTo() {
-    return EmployeeTree.getEmployeeByID(reportToID);
+    return Optional.ofNullable(cache.get(reportToID));
+  }
+
+  Employee getReportToNotNull() {
+    return Objects.requireNonNull(cache.get(reportToID));
   }
 
   public List<Employee> getAllReportTo() {
@@ -83,7 +93,7 @@ public class Employee {
     return Objects.hash(id);
   }
 
-  static Optional<Employee> from(String s) {
+  public static Optional<Employee> from(String s) {
     try {
       String[] tokens = s.split(",");
       Employee newInstance = new Employee(Long.parseLong(tokens[0]), tokens[1], Long.parseLong(tokens[2]));

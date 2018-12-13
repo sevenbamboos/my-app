@@ -1,14 +1,9 @@
 package com.mycompany.model;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class EmployeeTree {
-
-  private static final Map<Long, Employee> cache = new HashMap<>();
 
   private final Employee root;
 
@@ -36,22 +31,11 @@ public final class EmployeeTree {
     return new EmployeeTree(root);
   }
 
+  Employee root() {
+    return root;
+  }
+
   public void visit(Consumer<Employee> visitor) {
     root.visit(visitor);
-  }
-
-  public static Optional<Employee> readFrom(String s) {
-
-    Optional<Employee> employee = Employee.from(s);
-    if (employee.isPresent()) {
-      Employee em = employee.get();
-      cache.put(em.id, em);
-    }
-
-    return employee;
-  }
-
-  static Optional<Employee> getEmployeeByID(long id) {
-    return Optional.ofNullable(cache.get(id));
   }
 }
